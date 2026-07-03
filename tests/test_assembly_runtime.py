@@ -14,6 +14,10 @@ from compute_promise_minutes import compute_promise_minutes  # noqa: E402
 
 
 def test_assembly_runtime_is_present_and_used():
+    profile = json.loads((BUILD / "profile.manifest.json").read_text())
+    if profile["chosen_targets"].get("compute_promise_minutes") != "assembly":
+        return
+
     manifest = json.loads((BUILD / "compute_promise_minutes.manifest.json").read_text())
     host_adapter = (BUILD / manifest["host_adapter"]).read_text()
     assembly = (BUILD / manifest["implementation"]).read_text()

@@ -1,7 +1,6 @@
 # Compute Promise Minutes
 
 > Boundary: `compute_promise_minutes(base_minutes: number, store_minutes: number, courier_minutes: number) -> number`
-> Runs as: `assembly`
 
 ## Purpose
 
@@ -10,10 +9,6 @@ Compute the final customer-facing delivery promise duration.
 ## Behavior
 
 Return `base_minutes + store_minutes + courier_minutes`.
-
-This chapter intentionally runs as assembly. The generated edition may use
-Python only as adapter glue to pass numeric arguments into the compiled assembly
-library and return the native result.
 
 ## Examples
 

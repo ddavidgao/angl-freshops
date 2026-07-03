@@ -8,16 +8,18 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ANGL_REPO = Path(os.environ.get("ANGL_REPO", ROOT.parent / "angl")).resolve()
+sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ANGL_REPO))
 
 from angl.run import compile_until_green, load_program, topo_order  # noqa: E402
 from angl.verify import verify_spec  # noqa: E402
+from scripts.policy import apply_policy, write_decision_manifest  # noqa: E402
 
 
 def main() -> int:
     target = ROOT / "specs" / "build_delivery_promise.angl"
     build_dir = ROOT / "build" / "latest"
-    units = load_program(str(target))
+    units = apply_policy(load_program(str(target)))
     failures = []
     for name in topo_order(units):
         spec = units[name]
@@ -42,6 +44,7 @@ def main() -> int:
     if failures:
         print(json.dumps(failures, indent=2))
         return 1
+    write_decision_manifest(build_dir, units)
     return 0
 
 
@@ -52,6 +55,8 @@ def _cached_green(spec, spec_path, build_dir):
     if manifest_path.stat().st_mtime < spec_path.stat().st_mtime:
         return None
     manifest = json.loads(manifest_path.read_text())
+    if manifest.get("target") != spec["target"]:
+        return None
     build = {
         "implementation": str(build_dir / manifest["implementation"]),
         "judge_adapter": str(build_dir / manifest["judge_adapter"]),

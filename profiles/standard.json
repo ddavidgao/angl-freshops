@@ -1,0 +1,12 @@
+{
+  "name": "standard",
+  "description": "Use default implementation choices unless the compiler decides otherwise.",
+  "constraints": {
+    "must_run_locally": true,
+    "no_paid_apis": true
+  },
+  "preferences": {
+    "optimize_for": ["simple_debugging", "minimal_native_tooling"]
+  },
+  "targets": {}
+}

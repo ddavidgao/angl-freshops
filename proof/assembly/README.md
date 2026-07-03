@@ -1,6 +1,7 @@
 # Assembly Proof Snapshot
 
-This directory is a checked-in proof snapshot from the generated edition.
+This directory is a checked-in proof snapshot from the generated `native`
+profile edition.
 
 Source of truth:
 

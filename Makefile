@@ -1,12 +1,13 @@
 ANGL_REPO ?= ../angl
+PROFILE ?= native
 
-.PHONY: build verify seed run-api run-worker test proof clean
+.PHONY: build verify seed run-api run-worker test proof demo-profiles clean
 
 build:
-	ANGL_REPO=$(ANGL_REPO) .venv/bin/python scripts/compile_angl.py
+	ANGL_REPO=$(ANGL_REPO) ANGL_PROFILE=$(PROFILE) .venv/bin/python scripts/compile_angl.py
 
 verify:
-	ANGL_REPO=$(ANGL_REPO) .venv/bin/python scripts/verify_angl.py
+	ANGL_REPO=$(ANGL_REPO) ANGL_PROFILE=$(PROFILE) .venv/bin/python scripts/verify_angl.py
 
 seed:
 	.venv/bin/python -m app.seed
@@ -23,7 +24,10 @@ test: verify
 	.venv/bin/python tests/test_full_stack_flow.py
 
 proof:
-	ANGL_REPO=$(ANGL_REPO) .venv/bin/python scripts/proof.py
+	ANGL_REPO=$(ANGL_REPO) ANGL_PROFILE=$(PROFILE) .venv/bin/python scripts/proof.py
+
+demo-profiles:
+	ANGL_REPO=$(ANGL_REPO) .venv/bin/python scripts/demo_profiles.py
 
 clean:
 	rm -rf build __pycache__ app/__pycache__ tests/__pycache__

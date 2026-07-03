@@ -8,17 +8,19 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ANGL_REPO = Path(os.environ.get("ANGL_REPO", ROOT.parent / "angl")).resolve()
+sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ANGL_REPO))
 
 from angl.parse import parse  # noqa: E402
 from angl.verify import verify_spec  # noqa: E402
+from scripts.policy import apply_policy_to_spec  # noqa: E402
 
 
 def main() -> int:
     build_dir = ROOT / "build" / "latest"
     failed = 0
     for path in sorted((ROOT / "specs").glob("*.angl")):
-        spec = parse(path.read_text())
+        spec = apply_policy_to_spec(parse(path.read_text()))
         manifest_path = build_dir / f"{spec['func']}.manifest.json"
         manifest = json.loads(manifest_path.read_text())
         build = {

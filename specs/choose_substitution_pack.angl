@@ -1,7 +1,6 @@
 # Choose Substitution Pack
 
 > Boundary: `choose_substitution_pack(items: object, constraints: object) -> object`
-> Runs as: `bundle`
 
 ## Purpose
 

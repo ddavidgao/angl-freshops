@@ -7,6 +7,8 @@ The durable behavior is written as `.angl` chapters in `specs/`. The runnable
 edition is generated, verified, and then used by a normal backend with Postgres,
 Redis, a worker, and an HTTP API.
 
+Implementation strategy lives in `profiles/`, not in the Angl chapters.
+
 ## What It Does
 
 A customer submits a grocery order. FreshOps:
@@ -42,11 +44,34 @@ Each chapter has:
 
 `build/latest/` is generated output. It is intentionally ignored by git.
 
+## Compiler Profiles
+
+```text
+profiles/
+  standard.json
+  native.json
+```
+
+The same Angl source can be compiled under different profiles.
+
+`standard` keeps the implementation simple and lets the compiler use default
+targets.
+
+`native` asks the compiler to use generated bundles for two selection chapters
+and generated assembly for the small promise-timing function.
+
+The active build writes its decision record to:
+
+```text
+build/latest/profile.manifest.json
+```
+
 ## Assembly Proof
 
-`compute_promise_minutes.angl` runs as Angl's `assembly` target. During build,
-Angl generates ARM64 assembly, compiles it with local `clang` into a dylib, and
-generates a Python host adapter that calls the dylib through `ctypes`.
+Under the `native` profile, `compute_promise_minutes.angl` is compiled with
+Angl's `assembly` target. During build, Angl generates ARM64 assembly, compiles
+it with local `clang` into a dylib, and generates a Python host adapter that
+calls the dylib through `ctypes`.
 
 The live app uses that generated function when computing `promised_minutes`.
 
@@ -103,6 +128,14 @@ ANGL_MODEL_PROVIDER=claude-code ANGL_MODEL=sonnet make proof
 Cold regeneration can take several minutes because it asks the model to rebuild
 every chapter.
 
+To show the profile abstraction in a demo:
+
+```bash
+ANGL_MODEL_PROVIDER=claude-code ANGL_MODEL=sonnet make demo-profiles
+```
+
+The `.angl` source stays the same. The profile changes the compiler strategy.
+
 ## Run Locally
 
 ```bash
@@ -134,6 +167,7 @@ FreshOps now demonstrates:
 - Black-box verification for every chapter.
 - Postgres and Redis in the runtime path.
 - One generated ARM64 assembly chapter used by the live app.
+- Compiler profiles that move implementation strategy out of `.angl` source.
 - A repeatable proof command that exercises the whole path.
 
 GitHub does not know Angl as a language yet. `.gitattributes` keeps host and

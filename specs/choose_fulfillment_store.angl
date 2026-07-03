@@ -1,7 +1,6 @@
 # Choose Fulfillment Store
 
 > Boundary: `choose_fulfillment_store(items: object, constraints: object) -> object`
-> Runs as: `bundle`
 
 ## Purpose
 
