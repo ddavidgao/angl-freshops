@@ -64,6 +64,24 @@ Then open:
 http://127.0.0.1:8810
 ```
 
+## Proof Command
+
+After installing the venv, run the full local proof:
+
+```bash
+ANGL_MODEL_PROVIDER=claude-code ANGL_MODEL=sonnet make proof
+```
+
+This command:
+
+1. Starts Postgres and Redis.
+2. Deletes generated output.
+3. Rebuilds `build/latest/` from `.angl` chapters.
+4. Verifies every chapter with the Angl judge.
+5. Runs app-level integration tests.
+6. Starts the worker and API.
+7. Submits a real HTTP order and checks the saved promise.
+
 ## Why This Is Not One-Shot Claude
 
 One-shot Claude gives you generated source code, then every behavior change
