@@ -29,13 +29,18 @@ specs/
   choose_fulfillment_store.angl
   choose_substitution_pack.angl
   choose_courier_batch.angl
+  compute_promise_minutes.angl
   build_delivery_promise.angl
 ```
 
-Selection chapters use Angl's bundle target. A bundle can contain multiple
-generated files and build steps. In the current verified run, the model chose
-Python bundle files; native or assembly bundle output should be treated as a
-separate proof, not claimed unless the generated edition actually contains it.
+`compute_promise_minutes.angl` runs as Angl's `assembly` target. The generated
+edition contains ARM64 assembly, compiles it with local `clang` into
+`libcompute_promise_minutes.dylib`, and calls it from the generated host adapter
+with `ctypes`.
+
+Selection chapters use Angl's `bundle` and `python` targets. A bundle can
+contain multiple generated files and build steps. The generated edition is still
+disposable; the durable behavior remains in `specs/`.
 
 The generated edition lands in:
 
@@ -75,12 +80,20 @@ ANGL_MODEL_PROVIDER=claude-code ANGL_MODEL=sonnet make proof
 This command:
 
 1. Starts Postgres and Redis.
-2. Deletes generated output.
-3. Rebuilds `build/latest/` from `.angl` chapters.
-4. Verifies every chapter with the Angl judge.
+2. Builds missing or stale generated output from `.angl` chapters.
+3. Verifies every chapter with the Angl judge.
+4. Checks that `compute_promise_minutes` really generated `.s`, built a
+   `.dylib`, and is imported by the composed generated code.
 5. Runs app-level integration tests.
 6. Starts the worker and API.
 7. Submits a real HTTP order and checks the saved promise.
+
+For a cold regeneration proof, run:
+
+```bash
+make clean
+ANGL_MODEL_PROVIDER=claude-code ANGL_MODEL=sonnet make proof
+```
 
 ## Why This Is Not One-Shot Claude
 
@@ -93,9 +106,10 @@ accept or reject the generated edition.
 
 ## What This Proves
 
-This repo is not claiming the app is handwritten assembly. It proves a narrower
-and more useful thing: the product decisions are durable `.angl` chapters, while
-the runnable edition is generated and verified.
+This repo is not claiming the whole app is handwritten assembly. It proves a
+narrower and more useful thing: the product decisions are durable `.angl`
+chapters, while the runnable edition is generated and verified. One chapter is
+generated as real ARM64 assembly and used by the composed app.
 
 GitHub's language bar will mostly show the host glue languages because GitHub
 does not know Angl as a language yet. Read `specs/` first. That is the source of

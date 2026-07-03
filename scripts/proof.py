@@ -17,7 +17,6 @@ def main() -> int:
     processes = []
     try:
         run(["docker", "compose", "up", "-d", "postgres", "redis"])
-        run(["make", "clean"])
         run(["make", "build"])
         run(["make", "test"])
         run(["make", "seed"])

@@ -18,6 +18,7 @@ run-worker:
 	.venv/bin/python -m app.worker
 
 test: verify
+	.venv/bin/python tests/test_assembly_runtime.py
 	.venv/bin/python tests/test_generated_plan.py
 	.venv/bin/python tests/test_full_stack_flow.py
 

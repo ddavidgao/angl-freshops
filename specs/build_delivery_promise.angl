@@ -1,7 +1,7 @@
 # Build Delivery Promise
 
 > Boundary: `build_delivery_promise(order: object, store_candidates: object, substitution_candidates: object, courier_candidates: object, pressure: object) -> object`
-> Uses: `normalize_order`, `choose_fulfillment_store`, `choose_substitution_pack`, `choose_courier_batch`
+> Uses: `normalize_order`, `choose_fulfillment_store`, `choose_substitution_pack`, `choose_courier_batch`, `compute_promise_minutes`
 
 ## Purpose
 
@@ -21,8 +21,9 @@ Choose courier batch stops using courier candidates and courier constraints
 where `max_cost` is `pressure.batch_minutes`, `risk` is `pressure.risk`, and
 `delay` is `pressure.delay`.
 
-The promised minutes is `35 + store total_cost + courier total_cost`. If risk or
-delay warnings exist, include them in `reasons`. Return order id, customer,
+Compute promised minutes by calling `compute_promise_minutes` with base minutes
+35, the selected store total cost, and the selected courier total cost. If risk
+or delay warnings exist, include them in `reasons`. Return order id, customer,
 selected store id, substitutions, courier batch, promised minutes, and reasons.
 
 ## Examples
