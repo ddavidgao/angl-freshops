@@ -41,6 +41,15 @@ edition contains ARM64 assembly, compiles it with local `clang` into
 `libcompute_promise_minutes.dylib`, and calls it from the generated host adapter
 with `ctypes`.
 
+A checked-in proof snapshot of that generated assembly lives at:
+
+```text
+proof/assembly/compute_promise_minutes.s
+```
+
+The snapshot is not the source of truth; it exists so GitHub and reviewers can
+see the assembly output without running the compiler first.
+
 Selection chapters use Angl's `bundle` and `python` targets. A bundle can
 contain multiple generated files and build steps. The generated edition is still
 disposable; the durable behavior remains in `specs/`.
