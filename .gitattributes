@@ -1,0 +1,9 @@
+*.angl linguist-language=Markdown linguist-detectable=true
+
+# The language bar should describe the durable source, not the host/proof
+# plumbing needed to run the generated edition locally.
+app/** linguist-vendored
+scripts/** linguist-vendored
+tests/** linguist-vendored
+Makefile linguist-vendored
+docker-compose.yml linguist-vendored

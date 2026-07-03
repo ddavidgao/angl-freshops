@@ -111,7 +111,8 @@ narrower and more useful thing: the product decisions are durable `.angl`
 chapters, while the runnable edition is generated and verified. One chapter is
 generated as real ARM64 assembly and used by the composed app.
 
-GitHub's language bar will mostly show the host glue languages because GitHub
-does not know Angl as a language yet. Read `specs/` first. That is the source of
-truth. `app/`, `scripts/`, and `tests/` are the minimum runtime and proof
-plumbing needed to make the Angl chapters run as a real local app.
+GitHub does not know Angl as a language yet, so `.gitattributes` maps `.angl`
+chapters to Markdown for the language bar and marks host/proof plumbing as
+vendored. Read `specs/` first. That is the source of truth. `app/`, `scripts/`,
+and `tests/` are the minimum runtime and proof plumbing needed to make the Angl
+chapters run as a real local app.
