@@ -90,3 +90,14 @@ becomes another conversation.
 FreshOps keeps the durable edit in Angl. If the substitution policy changes,
 edit the substitution chapter and its examples, rebuild, and let the judge
 accept or reject the generated edition.
+
+## What This Proves
+
+This repo is not claiming the app is handwritten assembly. It proves a narrower
+and more useful thing: the product decisions are durable `.angl` chapters, while
+the runnable edition is generated and verified.
+
+GitHub's language bar will mostly show the host glue languages because GitHub
+does not know Angl as a language yet. Read `specs/` first. That is the source of
+truth. `app/`, `scripts/`, and `tests/` are the minimum runtime and proof
+plumbing needed to make the Angl chapters run as a real local app.
