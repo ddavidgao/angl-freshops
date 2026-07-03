@@ -1,0 +1,67 @@
+# Choose Fulfillment Store
+
+> Boundary: `choose_fulfillment_store(items: object, constraints: object) -> object`
+> Runs as: `bundle`
+
+## Purpose
+
+Pick the store that can most reliably fulfill an order.
+
+## Behavior
+
+Each candidate has `id`, `cost`, `value`, `risk_penalty`, and `delay_penalty`.
+Cost is drive minutes. Value is how much of the requested cart the store can
+fulfill. Risk penalty represents low-stock risk. Delay penalty represents
+courier congestion.
+
+Select the candidate set with the highest score while total cost is no more
+than `constraints.max_cost`. For this chapter, each store candidate is given a
+cost equal to the max cost, so the selected set is exactly one store. When
+`constraints.risk` is at least 7, subtract risk penalties. When
+`constraints.delay` is at least 6, subtract delay penalties.
+
+Return selected store ids, total cost, score, and warnings.
+
+## Examples
+
+### Nearby store wins when it can fill the cart
+
+Input `items`:
+```json
+[
+  {"id": "north-market", "cost": 12, "value": 96, "risk_penalty": 4, "delay_penalty": 3},
+  {"id": "west-market", "cost": 12, "value": 82, "risk_penalty": 1, "delay_penalty": 2},
+  {"id": "hub-store", "cost": 12, "value": 90, "risk_penalty": 2, "delay_penalty": 8}
+]
+```
+
+Input `constraints`:
+```json
+{"max_cost": 12, "risk": 3, "delay": 2}
+```
+
+Returns:
+```json
+{"selected_ids": ["north-market"], "total_cost": 12, "score": 96, "warnings": []}
+```
+
+### High congestion avoids the hub
+
+Input `items`:
+```json
+[
+  {"id": "north-market", "cost": 12, "value": 88, "risk_penalty": 4, "delay_penalty": 2},
+  {"id": "west-market", "cost": 12, "value": 86, "risk_penalty": 1, "delay_penalty": 1},
+  {"id": "hub-store", "cost": 12, "value": 91, "risk_penalty": 2, "delay_penalty": 12}
+]
+```
+
+Input `constraints`:
+```json
+{"max_cost": 12, "risk": 3, "delay": 8}
+```
+
+Returns:
+```json
+{"selected_ids": ["north-market"], "total_cost": 12, "score": 86, "warnings": ["delay penalties applied"]}
+```

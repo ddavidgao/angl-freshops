@@ -1,0 +1,78 @@
+# Normalize Order
+
+> Boundary: `normalize_order(order: object) -> object`
+
+## Purpose
+
+Prepare a customer grocery order for promise planning.
+
+## Behavior
+
+Return a plain object with `order_id`, `customer`, `items`, and `delivery_zone`.
+Trim customer and item ids. Quantities must be positive whole numbers. The order
+must contain at least one item. The delivery zone defaults to `north` when it is
+missing.
+
+## Examples
+
+### A normal order is cleaned
+
+Input `order`:
+```json
+{
+  "order_id": "O-100",
+  "customer": " Mia ",
+  "delivery_zone": "west",
+  "items": [
+    {"id": " milk ", "qty": 2},
+    {"id": "eggs", "qty": 1}
+  ]
+}
+```
+
+Returns:
+```json
+{
+  "order_id": "O-100",
+  "customer": "Mia",
+  "delivery_zone": "west",
+  "items": [
+    {"id": "milk", "qty": 2},
+    {"id": "eggs", "qty": 1}
+  ]
+}
+```
+
+### Delivery zone defaults
+
+Input `order`:
+```json
+{
+  "order_id": "O-101",
+  "customer": "Jon",
+  "items": [{"id": "bread", "qty": 1}]
+}
+```
+
+Returns:
+```json
+{
+  "order_id": "O-101",
+  "customer": "Jon",
+  "delivery_zone": "north",
+  "items": [{"id": "bread", "qty": 1}]
+}
+```
+
+### Empty orders are rejected
+
+Input `order`:
+```json
+{
+  "order_id": "O-102",
+  "customer": "Mia",
+  "items": []
+}
+```
+
+Fails with error containing: items

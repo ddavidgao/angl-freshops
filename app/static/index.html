@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Angl FreshOps</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <p class="eyebrow">Angl source → generated bundle → real infra</p>
+      <h1>FreshOps promise engine</h1>
+      <p>
+        Submit a grocery order. Postgres stores it, Redis queues it, a worker
+        calls generated Angl code, and the promise is saved back to Postgres.
+      </p>
+    </section>
+    <section class="panel">
+      <button id="submit">Place realistic order</button>
+      <pre id="out">ready</pre>
+    </section>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>

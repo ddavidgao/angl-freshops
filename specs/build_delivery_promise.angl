@@ -1,0 +1,82 @@
+# Build Delivery Promise
+
+> Boundary: `build_delivery_promise(order: object, store_candidates: object, substitution_candidates: object, courier_candidates: object, pressure: object) -> object`
+> Uses: `normalize_order`, `choose_fulfillment_store`, `choose_substitution_pack`, `choose_courier_batch`
+
+## Purpose
+
+Build the customer-facing delivery promise from verified decision chapters.
+
+## Behavior
+
+Normalize the order first. Choose the fulfillment store using store candidates
+and store constraints where `max_cost` is `pressure.max_cost`, `risk` is
+`pressure.risk`, and `delay` is `pressure.delay`.
+
+Choose substitutions using substitution candidates and substitution constraints
+where `max_cost` is `pressure.substitution_budget`, `risk` is `pressure.risk`,
+and `delay` is `pressure.delay`.
+
+Choose courier batch stops using courier candidates and courier constraints
+where `max_cost` is `pressure.batch_minutes`, `risk` is `pressure.risk`, and
+`delay` is `pressure.delay`.
+
+The promised minutes is `35 + store total_cost + courier total_cost`. If risk or
+delay warnings exist, include them in `reasons`. Return order id, customer,
+selected store id, substitutions, courier batch, promised minutes, and reasons.
+
+## Examples
+
+### A normal order can be promised
+
+Input `order`:
+```json
+{
+  "order_id": "O-200",
+  "customer": " Mia ",
+  "delivery_zone": "west",
+  "items": [{"id": " milk ", "qty": 2}]
+}
+```
+
+Input `store_candidates`:
+```json
+[
+  {"id": "north-market", "cost": 12, "value": 96, "risk_penalty": 4, "delay_penalty": 3},
+  {"id": "west-market", "cost": 12, "value": 82, "risk_penalty": 1, "delay_penalty": 2}
+]
+```
+
+Input `substitution_candidates`:
+```json
+[
+  {"id": "oat-milk-for-milk", "cost": 2, "value": 8, "risk_penalty": 1, "delay_penalty": 1},
+  {"id": "brown-eggs-for-eggs", "cost": 1, "value": 5, "risk_penalty": 0, "delay_penalty": 1}
+]
+```
+
+Input `courier_candidates`:
+```json
+[
+  {"id": "drop-17", "cost": 4, "value": 9, "risk_penalty": 0, "delay_penalty": 1},
+  {"id": "drop-22", "cost": 5, "value": 10, "risk_penalty": 1, "delay_penalty": 2}
+]
+```
+
+Input `pressure`:
+```json
+{"max_cost": 12, "risk": 3, "delay": 2, "substitution_budget": 3, "batch_minutes": 9}
+```
+
+Returns:
+```json
+{
+  "order_id": "O-200",
+  "customer": "Mia",
+  "store": "north-market",
+  "substitutions": ["oat-milk-for-milk", "brown-eggs-for-eggs"],
+  "courier_batch": ["drop-17", "drop-22"],
+  "promised_minutes": 56,
+  "reasons": []
+}
+```

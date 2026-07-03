@@ -1,0 +1,64 @@
+# Choose Substitution Pack
+
+> Boundary: `choose_substitution_pack(items: object, constraints: object) -> object`
+> Runs as: `bundle`
+
+## Purpose
+
+Choose substitutions that improve the order without exceeding the customer's
+tolerance for changes.
+
+## Behavior
+
+Each substitution candidate has `id`, `cost`, `value`, `risk_penalty`, and
+`delay_penalty`. Cost is customer annoyance. Value is saved cart value. Risk
+penalty represents allergen or preference risk. Delay penalty represents extra
+shopping time.
+
+Select the highest scoring set whose total cost is no more than
+`constraints.max_cost`. Apply risk penalties when risk is at least 7 and delay
+penalties when delay is at least 6.
+
+## Examples
+
+### Choose useful low-annoyance substitutions
+
+Input `items`:
+```json
+[
+  {"id": "oat-milk-for-milk", "cost": 2, "value": 8, "risk_penalty": 1, "delay_penalty": 1},
+  {"id": "brown-eggs-for-eggs", "cost": 1, "value": 5, "risk_penalty": 0, "delay_penalty": 1},
+  {"id": "sourdough-for-bread", "cost": 3, "value": 6, "risk_penalty": 0, "delay_penalty": 2}
+]
+```
+
+Input `constraints`:
+```json
+{"max_cost": 3, "risk": 2, "delay": 2}
+```
+
+Returns:
+```json
+{"selected_ids": ["oat-milk-for-milk", "brown-eggs-for-eggs"], "total_cost": 3, "score": 13, "warnings": []}
+```
+
+### High preference risk skips risky swaps
+
+Input `items`:
+```json
+[
+  {"id": "almond-milk-for-milk", "cost": 2, "value": 9, "risk_penalty": 8, "delay_penalty": 1},
+  {"id": "brown-eggs-for-eggs", "cost": 1, "value": 5, "risk_penalty": 0, "delay_penalty": 1},
+  {"id": "bagels-for-bread", "cost": 2, "value": 6, "risk_penalty": 1, "delay_penalty": 1}
+]
+```
+
+Input `constraints`:
+```json
+{"max_cost": 3, "risk": 8, "delay": 2}
+```
+
+Returns:
+```json
+{"selected_ids": ["brown-eggs-for-eggs", "bagels-for-bread"], "total_cost": 3, "score": 10, "warnings": ["risk penalties applied"]}
+```

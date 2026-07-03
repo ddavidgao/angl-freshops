@@ -1,0 +1,61 @@
+# Choose Courier Batch
+
+> Boundary: `choose_courier_batch(items: object, constraints: object) -> object`
+
+## Purpose
+
+Choose courier stops to batch with the new order without breaking the promise.
+
+## Behavior
+
+Each batch candidate has `id`, `cost`, `value`, `risk_penalty`, and
+`delay_penalty`. Cost is added minutes. Value is route efficiency gained. Risk
+penalty represents cold-chain risk. Delay penalty represents late-order risk.
+
+Select the highest scoring set whose total added minutes is no more than
+`constraints.max_cost`. Apply risk penalties when risk is at least 7 and delay
+penalties when delay is at least 6.
+
+## Examples
+
+### Batch nearby compatible stops
+
+Input `items`:
+```json
+[
+  {"id": "drop-17", "cost": 4, "value": 9, "risk_penalty": 0, "delay_penalty": 1},
+  {"id": "drop-22", "cost": 5, "value": 10, "risk_penalty": 1, "delay_penalty": 2},
+  {"id": "drop-40", "cost": 8, "value": 11, "risk_penalty": 5, "delay_penalty": 6}
+]
+```
+
+Input `constraints`:
+```json
+{"max_cost": 9, "risk": 2, "delay": 2}
+```
+
+Returns:
+```json
+{"selected_ids": ["drop-17", "drop-22"], "total_cost": 9, "score": 19, "warnings": []}
+```
+
+### High lateness pressure avoids risky batching
+
+Input `items`:
+```json
+[
+  {"id": "drop-17", "cost": 4, "value": 9, "risk_penalty": 0, "delay_penalty": 1},
+  {"id": "drop-22", "cost": 5, "value": 10, "risk_penalty": 1, "delay_penalty": 8},
+  {"id": "drop-40", "cost": 6, "value": 11, "risk_penalty": 1, "delay_penalty": 7}
+]
+```
+
+Input `constraints`:
+```json
+{"max_cost": 9, "risk": 2, "delay": 8}
+```
+
+Returns:
+```json
+{"selected_ids": ["drop-17"], "total_cost": 4, "score": 8, "warnings": ["delay penalties applied"]}
+```
