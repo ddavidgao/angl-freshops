@@ -1,7 +1,8 @@
-*.angl linguist-language=Markdown linguist-detectable=true
+# GitHub Linguist does not know Angl yet. Do not map `.angl` to a fake
+# language like Markdown just to affect the language bar.
+*.angl linguist-detectable=false
 
-# The language bar should describe the durable source, not the host/proof
-# plumbing needed to run the generated edition locally.
+# Host/proof plumbing should not dominate the language bar.
 app/** linguist-vendored
 scripts/** linguist-vendored
 tests/** linguist-vendored
