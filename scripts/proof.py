@@ -45,6 +45,9 @@ def main() -> int:
 def run(command: list[str]) -> None:
     env = os.environ.copy()
     env["ANGL_REPO"] = env.get("ANGL_REPO", str((ROOT.parent / "angl").resolve()))
+    env["ANGL_MODEL_PROVIDER"] = env.get("ANGL_MODEL_PROVIDER", "claude-code")
+    env["ANGL_MODEL"] = env.get("ANGL_MODEL", "sonnet")
+    env["ANGL_MODEL_TIMEOUT"] = env.get("ANGL_MODEL_TIMEOUT", "180")
     print("+ " + " ".join(command), flush=True)
     subprocess.run(command, cwd=ROOT, env=env, check=True)
 

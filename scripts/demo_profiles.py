@@ -33,7 +33,7 @@ def main() -> int:
     print("\nAssembly proof snapshot:", flush=True)
     print("  proof/assembly/compute_promise_minutes.s", flush=True)
     print("\nRuntime proof command:", flush=True)
-    print("  ANGL_MODEL_PROVIDER=claude-code ANGL_MODEL=sonnet make proof PROFILE=scaleup", flush=True)
+    print("  make prove", flush=True)
     return 0
 
 
