@@ -12,7 +12,7 @@ async function placeOrder() {
     pressure: {
       max_cost: 12,
       risk: 3,
-      delay: 2,
+      delay: 8,
       substitution_budget: 3,
       batch_minutes: 9
     }

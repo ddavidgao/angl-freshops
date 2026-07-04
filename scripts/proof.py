@@ -75,7 +75,7 @@ def submit_order() -> dict:
         "pressure": {
             "max_cost": 12,
             "risk": 3,
-            "delay": 2,
+            "delay": 8,
             "substitution_budget": 3,
             "batch_minutes": 9,
         },
@@ -98,6 +98,7 @@ def submit_order() -> dict:
         if current.get("promise"):
             expect(current["status"] == "promised", current)
             expect(current["promise"]["store"] == "north-market", current)
+            expect("delay penalties applied" in current["promise"]["reasons"], current)
             expect(
                 current["promise"]["courier_batch"] == ["drop-17", "drop-22"],
                 current,

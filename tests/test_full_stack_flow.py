@@ -34,7 +34,7 @@ def test_full_stack_order_flow():
             "pressure": {
                 "max_cost": 12,
                 "risk": 3,
-                "delay": 2,
+                "delay": 8,
                 "substitution_budget": 3,
                 "batch_minutes": 9,
             },
@@ -48,6 +48,7 @@ def test_full_stack_order_flow():
     assert result["status"] == "promised"
     assert result["promise"]["customer"] == "Mia"
     assert result["promise"]["store"] == "north-market"
+    assert "delay penalties applied" in result["promise"]["reasons"]
     assert result["promise"]["courier_batch"] == ["drop-17", "drop-22"]
 
 

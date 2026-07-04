@@ -56,9 +56,9 @@ def main() -> None:
             cur.executemany(
                 "insert into store_candidates values (%s, %s, %s, %s, %s)",
                 [
-                    ("north-market", 12, 96, 4, 3),
-                    ("west-market", 12, 82, 1, 2),
-                    ("hub-store", 12, 90, 2, 8),
+                    ("north-market", 12, 88, 4, 2),
+                    ("west-market", 12, 86, 1, 1),
+                    ("hub-store", 12, 91, 2, 12),
                 ],
             )
             cur.executemany(
