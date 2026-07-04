@@ -119,7 +119,7 @@ and tests. Product behavior is in `specs/`.
 After installing dependencies, run:
 
 ```bash
-ANGL_MODEL_PROVIDER=claude-code ANGL_MODEL=sonnet make proof
+make prove
 ```
 
 This command:
@@ -137,7 +137,7 @@ For a cold regeneration run:
 
 ```bash
 make clean
-ANGL_MODEL_PROVIDER=claude-code ANGL_MODEL=sonnet make proof
+make prove
 ```
 
 Cold regeneration can take several minutes because it asks the model to rebuild
@@ -146,15 +146,12 @@ every chapter.
 To show the profile abstraction in a demo:
 
 ```bash
-ANGL_MODEL_PROVIDER=claude-code ANGL_MODEL=sonnet make demo-profiles
+make demo
 ```
 
 The `.angl` source stays the same. The profile changes the compiler strategy.
-Use `PROFILE=scaleup` for the launch demo proof:
 
-```bash
-ANGL_MODEL_PROVIDER=claude-code ANGL_MODEL=sonnet make proof PROFILE=scaleup
-```
+`make prove` runs the launch proof with the `scaleup` profile.
 
 ## Run Locally
 
@@ -163,7 +160,7 @@ python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 docker compose up -d postgres redis
 make seed
-ANGL_MODEL_PROVIDER=claude-code ANGL_MODEL=sonnet make build
+make build
 make run-worker
 make run-api
 ```
@@ -173,6 +170,10 @@ Open:
 ```text
 http://127.0.0.1:8810
 ```
+
+FreshOps uses the configured Angl compiler provider. The Makefile defaults to a
+Claude Code provider for this demo, but the provider can be overridden with
+`ANGL_MODEL_PROVIDER`, `ANGL_MODEL`, and `ANGL_MODEL_TIMEOUT`.
 
 ## What This Repo Is Proving
 
