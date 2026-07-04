@@ -6,6 +6,8 @@
 
 Pick the store that can most reliably fulfill an order.
 
+Schemas: `schemas/Candidate.schema.json`, `schemas/SelectionResult.schema.json`
+
 ## Behavior
 
 Each candidate has `id`, `cost`, `value`, `risk_penalty`, and `delay_penalty`.

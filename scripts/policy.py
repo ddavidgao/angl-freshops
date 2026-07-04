@@ -41,6 +41,7 @@ def load_profile() -> dict:
 
 def write_decision_manifest(build_dir: Path, units: dict) -> None:
     profile = load_profile()
+    reasons = profile.get("reasons", {})
     manifest = {
         "profile": profile["name"],
         "description": profile.get("description"),
@@ -49,6 +50,11 @@ def write_decision_manifest(build_dir: Path, units: dict) -> None:
         "chosen_targets": {
             name: spec.get("target", "python")
             for name, spec in sorted(units.items())
+        },
+        "reasons": {
+            name: reasons.get(name, "default compiler target")
+            for name, spec in sorted(units.items())
+            if spec.get("target", "python") != "python" or name in reasons
         },
     }
     build_dir.mkdir(parents=True, exist_ok=True)

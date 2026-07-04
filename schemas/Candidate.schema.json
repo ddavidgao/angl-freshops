@@ -1,0 +1,12 @@
+{
+  "$id": "Candidate",
+  "type": "object",
+  "required": ["id", "cost", "value", "risk_penalty", "delay_penalty"],
+  "properties": {
+    "id": {"type": "string"},
+    "cost": {"type": "integer", "minimum": 0},
+    "value": {"type": "integer"},
+    "risk_penalty": {"type": "integer", "minimum": 0},
+    "delay_penalty": {"type": "integer", "minimum": 0}
+  }
+}

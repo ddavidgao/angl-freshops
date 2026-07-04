@@ -7,6 +7,8 @@
 Choose substitutions that improve the order without exceeding the customer's
 tolerance for changes.
 
+Schemas: `schemas/Candidate.schema.json`, `schemas/SelectionResult.schema.json`
+
 ## Behavior
 
 Each substitution candidate has `id`, `cost`, `value`, `risk_penalty`, and

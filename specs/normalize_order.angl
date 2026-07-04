@@ -6,6 +6,8 @@
 
 Prepare a customer grocery order for promise planning.
 
+Schema: `schemas/Order.schema.json`
+
 ## Behavior
 
 Return a plain object with `order_id`, `customer`, `items`, and `delivery_zone`.

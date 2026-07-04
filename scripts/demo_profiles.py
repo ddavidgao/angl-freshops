@@ -17,21 +17,23 @@ UNITS = [
 
 def main() -> int:
     assert_no_language_targets()
-    standard = profile_targets("standard")
-    native = profile_targets("native")
-    print_profile("standard", standard)
-    print_profile("native", native)
+    standard = load_profile("standard")
+    scaleup = load_profile("scaleup")
+    print_profile("standard", selected_targets(standard))
+    print_profile("scaleup", selected_targets(scaleup))
     print("\nSame Angl source. Different compiler profile.", flush=True)
     print("-------------------", flush=True)
     for name in UNITS:
-        left = standard[name]
-        right = native[name]
+        left = selected_targets(standard)[name]
+        right = selected_targets(scaleup)[name]
         marker = "==" if left == right else "->"
         print(f"{name:28} {left:8} {marker} {right}", flush=True)
+        if marker == "->" and name in scaleup.get("reasons", {}):
+            print(f"{'':28} reason   {scaleup['reasons'][name]}", flush=True)
     print("\nAssembly proof snapshot:", flush=True)
     print("  proof/assembly/compute_promise_minutes.s", flush=True)
     print("\nRuntime proof command:", flush=True)
-    print("  ANGL_MODEL_PROVIDER=claude-code ANGL_MODEL=sonnet make proof PROFILE=native", flush=True)
+    print("  ANGL_MODEL_PROVIDER=claude-code ANGL_MODEL=sonnet make proof PROFILE=scaleup", flush=True)
     return 0
 
 
@@ -45,8 +47,11 @@ def assert_no_language_targets() -> None:
     print("Angl source contains no language target hints.", flush=True)
 
 
-def profile_targets(name: str) -> dict:
-    data = json.loads((ROOT / "profiles" / f"{name}.json").read_text())
+def load_profile(name: str) -> dict:
+    return json.loads((ROOT / "profiles" / f"{name}.json").read_text())
+
+
+def selected_targets(data: dict) -> dict:
     selected = {unit: "python" for unit in UNITS}
     selected.update(data.get("targets", {}))
     return selected

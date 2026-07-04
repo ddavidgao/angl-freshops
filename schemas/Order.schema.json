@@ -1,0 +1,14 @@
+{
+  "$id": "Order",
+  "type": "object",
+  "required": ["order_id", "customer", "items"],
+  "properties": {
+    "order_id": {"type": "string"},
+    "customer": {"type": "string"},
+    "delivery_zone": {"type": "string"},
+    "items": {
+      "type": "array",
+      "items": {"$ref": "OrderItem.schema.json"}
+    }
+  }
+}

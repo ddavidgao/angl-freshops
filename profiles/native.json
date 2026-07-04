@@ -13,5 +13,10 @@
     "choose_fulfillment_store": "bundle",
     "choose_substitution_pack": "bundle",
     "compute_promise_minutes": "assembly"
+  },
+  "reasons": {
+    "choose_fulfillment_store": "bundle keeps generated selection code and adapters together",
+    "choose_substitution_pack": "bundle keeps generated selection code and adapters together",
+    "compute_promise_minutes": "small pure numeric hot path, good fit for native proof"
   }
 }

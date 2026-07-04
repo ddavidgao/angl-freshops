@@ -1,0 +1,12 @@
+{
+  "$id": "Pressure",
+  "type": "object",
+  "required": ["max_cost", "risk", "delay", "substitution_budget", "batch_minutes"],
+  "properties": {
+    "max_cost": {"type": "integer", "minimum": 0},
+    "risk": {"type": "integer", "minimum": 0},
+    "delay": {"type": "integer", "minimum": 0},
+    "substitution_budget": {"type": "integer", "minimum": 0},
+    "batch_minutes": {"type": "integer", "minimum": 0}
+  }
+}

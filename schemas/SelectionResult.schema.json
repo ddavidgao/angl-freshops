@@ -1,0 +1,17 @@
+{
+  "$id": "SelectionResult",
+  "type": "object",
+  "required": ["selected_ids", "total_cost", "score", "warnings"],
+  "properties": {
+    "selected_ids": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "total_cost": {"type": "integer", "minimum": 0},
+    "score": {"type": "integer"},
+    "warnings": {
+      "type": "array",
+      "items": {"type": "string"}
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "$id": "OrderItem",
+  "type": "object",
+  "required": ["id", "qty"],
+  "properties": {
+    "id": {"type": "string"},
+    "qty": {"type": "integer", "minimum": 1}
+  }
+}

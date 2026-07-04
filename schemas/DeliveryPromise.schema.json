@@ -1,0 +1,31 @@
+{
+  "$id": "DeliveryPromise",
+  "type": "object",
+  "required": [
+    "order_id",
+    "customer",
+    "store",
+    "substitutions",
+    "courier_batch",
+    "promised_minutes",
+    "reasons"
+  ],
+  "properties": {
+    "order_id": {"type": "string"},
+    "customer": {"type": "string"},
+    "store": {"type": "string"},
+    "substitutions": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "courier_batch": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "promised_minutes": {"type": "integer", "minimum": 0},
+    "reasons": {
+      "type": "array",
+      "items": {"type": "string"}
+    }
+  }
+}

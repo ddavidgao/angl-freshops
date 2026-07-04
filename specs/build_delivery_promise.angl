@@ -7,6 +7,9 @@
 
 Build the customer-facing delivery promise from verified decision chapters.
 
+Schemas: `schemas/Order.schema.json`, `schemas/Candidate.schema.json`,
+`schemas/Pressure.schema.json`, `schemas/DeliveryPromise.schema.json`
+
 ## Behavior
 
 Normalize the order first. Choose the fulfillment store using store candidates
