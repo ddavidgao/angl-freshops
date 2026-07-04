@@ -67,6 +67,7 @@ def submit_order() -> dict:
     order = {
         "customer": "Mia",
         "delivery_zone": "west",
+        "priority": "express",
         "items": [
             {"id": "milk", "qty": 2},
             {"id": "eggs", "qty": 1},
@@ -99,11 +100,12 @@ def submit_order() -> dict:
             expect(current["status"] == "promised", current)
             expect(current["promise"]["store"] == "north-market", current)
             expect("delay penalties applied" in current["promise"]["reasons"], current)
+            expect("express priority" in current["promise"]["reasons"], current)
             expect(
                 current["promise"]["courier_batch"] == ["drop-17", "drop-22"],
                 current,
             )
-            expect(current["promise"]["promised_minutes"] == 56, current)
+            expect(current["promise"]["promised_minutes"] == 46, current)
             return current
         time.sleep(0.25)
     raise RuntimeError("promise was not produced")

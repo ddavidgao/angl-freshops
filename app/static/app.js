@@ -4,6 +4,7 @@ async function placeOrder() {
   const order = {
     customer: "Mia",
     delivery_zone: "west",
+    priority: "express",
     items: [
       {id: "milk", qty: 2},
       {id: "eggs", qty: 1},

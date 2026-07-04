@@ -31,7 +31,7 @@ def test_assembly_runtime_is_present_and_used():
     assert re.search(r"\.glob(?:a)?l\s+_compute_promise_minutes", assembly)
     assert re.search(r"_compute_promise_minutes\w*:", assembly)
     assert "from compute_promise_minutes import compute_promise_minutes" in top_level
-    assert "compute_promise_minutes(35" in top_level
+    assert "compute_promise_minutes(" in top_level
     assert compute_promise_minutes(35, 12, 9) == 56
 
 

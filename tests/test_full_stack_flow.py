@@ -27,6 +27,7 @@ def test_full_stack_order_flow():
         {
             "customer": "Mia",
             "delivery_zone": "west",
+            "priority": "express",
             "items": [
                 {"id": " milk ", "qty": 2},
                 {"id": "eggs", "qty": 1},
@@ -49,7 +50,9 @@ def test_full_stack_order_flow():
     assert result["promise"]["customer"] == "Mia"
     assert result["promise"]["store"] == "north-market"
     assert "delay penalties applied" in result["promise"]["reasons"]
+    assert "express priority" in result["promise"]["reasons"]
     assert result["promise"]["courier_batch"] == ["drop-17", "drop-22"]
+    assert result["promise"]["promised_minutes"] == 46
 
 
 def test_duplicate_order_id_returns_conflict():

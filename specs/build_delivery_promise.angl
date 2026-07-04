@@ -24,10 +24,12 @@ Choose courier batch stops using courier candidates and courier constraints
 where `max_cost` is `pressure.batch_minutes`, `risk` is `pressure.risk`, and
 `delay` is `pressure.delay`.
 
-Compute promised minutes by calling `compute_promise_minutes` with base minutes
-35, the selected store total cost, and the selected courier total cost. If risk
-or delay warnings exist, include them in `reasons`. Return order id, customer,
-selected store id, substitutions, courier batch, promised minutes, and reasons.
+Compute promised minutes by calling `compute_promise_minutes` with the selected
+store total cost and the selected courier total cost. Use base minutes 25 when
+`order.priority` is `"express"`; otherwise use base minutes 35. If risk or
+delay warnings exist, include them in `reasons`. If the order is express,
+include `"express priority"` in `reasons`. Return order id, customer, selected
+store id, substitutions, courier batch, promised minutes, and reasons.
 
 ## Examples
 
@@ -39,6 +41,7 @@ Input `order`:
   "order_id": "O-200",
   "customer": " Mia ",
   "delivery_zone": "west",
+  "priority": "express",
   "items": [{"id": " milk ", "qty": 2}]
 }
 ```
@@ -69,7 +72,7 @@ Input `courier_candidates`:
 
 Input `pressure`:
 ```json
-{"max_cost": 12, "risk": 3, "delay": 2, "substitution_budget": 3, "batch_minutes": 9}
+{"max_cost": 12, "risk": 3, "delay": 8, "substitution_budget": 3, "batch_minutes": 9}
 ```
 
 Returns:
@@ -80,7 +83,7 @@ Returns:
   "store": "north-market",
   "substitutions": ["oat-milk-for-milk", "brown-eggs-for-eggs"],
   "courier_batch": ["drop-17", "drop-22"],
-  "promised_minutes": 56,
-  "reasons": []
+  "promised_minutes": 46,
+  "reasons": ["delay penalties applied", "express priority"]
 }
 ```
