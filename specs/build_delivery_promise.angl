@@ -5,35 +5,43 @@
 
 ## Purpose
 
-Build the customer-facing delivery promise from verified decision chapters.
+Create the delivery promise that FreshOps shows a customer after they place a
+grocery order.
 
 Schemas: `schemas/Order.schema.json`, `schemas/Candidate.schema.json`,
 `schemas/Pressure.schema.json`, `schemas/DeliveryPromise.schema.json`
 
 ## Behavior
 
-Normalize the order first. Choose the fulfillment store using store candidates
-and store constraints where `max_cost` is `pressure.max_cost`, `risk` is
-`pressure.risk`, and `delay` is `pressure.delay`.
+Start by cleaning the order so names, item ids, and missing defaults are
+consistent.
 
-Choose substitutions using substitution candidates and substitution constraints
-where `max_cost` is `pressure.substitution_budget`, `risk` is `pressure.risk`,
-and `delay` is `pressure.delay`.
+Then make the three planning decisions that shape the promise:
 
-Choose courier batch stops using courier candidates and courier constraints
-where `max_cost` is `pressure.batch_minutes`, `risk` is `pressure.risk`, and
-`delay` is `pressure.delay`.
+Pick the store that can fulfill the order under the current operating pressure.
+Use `pressure.max_cost` as the store cost limit, and use the current risk and
+delay pressure when judging the store options.
 
-Compute promised minutes by calling `compute_promise_minutes` with the selected
-store total cost and the selected courier total cost. Use base minutes 25 when
-`order.priority` is `"express"`; otherwise use base minutes 35. If risk or
-delay warnings exist, include them in `reasons`. If the order is express,
-include `"express priority"` in `reasons`. Return order id, customer, selected
-store id, substitutions, courier batch, promised minutes, and reasons.
+Pick substitutions under the substitution budget. Use the same risk and delay
+pressure so risky or slow substitutions are less attractive when the system is
+under strain.
+
+Pick nearby courier stops that can ride along with this order without exceeding
+the route minutes allowed by `pressure.batch_minutes`.
+
+The customer-facing time starts at 25 minutes for express orders and 35 minutes
+for normal orders. Add the selected store minutes and selected courier minutes
+to get the final promise.
+
+If any planning step reports risk or delay warnings, include those warnings in
+`reasons`. If the order is express, include `"express priority"` in `reasons`.
+
+Return the order id, customer, selected store, substitutions, courier batch,
+promised minutes, and reasons.
 
 ## Examples
 
-### A normal order can be promised
+### An express order can be promised during congestion
 
 Input `order`:
 ```json
@@ -42,7 +50,10 @@ Input `order`:
   "customer": " Mia ",
   "delivery_zone": "west",
   "priority": "express",
-  "items": [{"id": " milk ", "qty": 2}]
+  "items": [
+    {"id": " ice cream ", "qty": 1, "cold_chain": true},
+    {"id": " milk ", "qty": 2}
+  ]
 }
 ```
 
@@ -85,5 +96,119 @@ Returns:
   "courier_batch": ["drop-17", "drop-22"],
   "promised_minutes": 46,
   "reasons": ["delay penalties applied", "express priority"]
+}
+```
+
+### A normal-priority order uses the normal base time
+
+Input `order`:
+```json
+{
+  "order_id": "O-201",
+  "customer": " Mia ",
+  "delivery_zone": "west",
+  "priority": "normal",
+  "items": [
+    {"id": " milk ", "qty": 2}
+  ]
+}
+```
+
+Input `store_candidates`:
+```json
+[
+  {"id": "north-market", "cost": 12, "value": 96, "risk_penalty": 4, "delay_penalty": 3},
+  {"id": "west-market", "cost": 12, "value": 82, "risk_penalty": 1, "delay_penalty": 2}
+]
+```
+
+Input `substitution_candidates`:
+```json
+[
+  {"id": "oat-milk-for-milk", "cost": 2, "value": 8, "risk_penalty": 1, "delay_penalty": 1},
+  {"id": "brown-eggs-for-eggs", "cost": 1, "value": 5, "risk_penalty": 0, "delay_penalty": 1}
+]
+```
+
+Input `courier_candidates`:
+```json
+[
+  {"id": "drop-17", "cost": 4, "value": 9, "risk_penalty": 0, "delay_penalty": 1},
+  {"id": "drop-22", "cost": 5, "value": 10, "risk_penalty": 1, "delay_penalty": 2}
+]
+```
+
+Input `pressure`:
+```json
+{"max_cost": 12, "risk": 3, "delay": 8, "substitution_budget": 3, "batch_minutes": 9}
+```
+
+Returns:
+```json
+{
+  "order_id": "O-201",
+  "customer": "Mia",
+  "store": "north-market",
+  "substitutions": ["oat-milk-for-milk", "brown-eggs-for-eggs"],
+  "courier_batch": ["drop-17", "drop-22"],
+  "promised_minutes": 56,
+  "reasons": ["delay penalties applied"]
+}
+```
+
+### An express order keeps the express reason without delay warnings
+
+Input `order`:
+```json
+{
+  "order_id": "O-202",
+  "customer": " Mia ",
+  "delivery_zone": "west",
+  "priority": "express",
+  "items": [
+    {"id": " milk ", "qty": 2}
+  ]
+}
+```
+
+Input `store_candidates`:
+```json
+[
+  {"id": "north-market", "cost": 12, "value": 96, "risk_penalty": 4, "delay_penalty": 3},
+  {"id": "west-market", "cost": 12, "value": 82, "risk_penalty": 1, "delay_penalty": 2}
+]
+```
+
+Input `substitution_candidates`:
+```json
+[
+  {"id": "oat-milk-for-milk", "cost": 2, "value": 8, "risk_penalty": 1, "delay_penalty": 1},
+  {"id": "brown-eggs-for-eggs", "cost": 1, "value": 5, "risk_penalty": 0, "delay_penalty": 1}
+]
+```
+
+Input `courier_candidates`:
+```json
+[
+  {"id": "drop-17", "cost": 4, "value": 9, "risk_penalty": 0, "delay_penalty": 1},
+  {"id": "drop-22", "cost": 5, "value": 10, "risk_penalty": 1, "delay_penalty": 2}
+]
+```
+
+Input `pressure`:
+```json
+{"max_cost": 12, "risk": 3, "delay": 2, "substitution_budget": 3, "batch_minutes": 9}
+```
+
+Returns:
+```json
+{
+  "order_id": "O-202",
+  "customer": "Mia",
+  "store": "north-market",
+  "substitutions": ["oat-milk-for-milk", "brown-eggs-for-eggs"],
+  "courier_batch": ["drop-17", "drop-22"],
+  "promised_minutes": 46,
+  "reasons": ["express priority"]
 }
 ```

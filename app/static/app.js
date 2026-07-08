@@ -6,6 +6,7 @@ async function placeOrder() {
     delivery_zone: "west",
     priority: "express",
     items: [
+      {id: "ice cream", qty: 1, cold_chain: true},
       {id: "milk", qty: 2},
       {id: "eggs", qty: 1},
       {id: "bread", qty: 1}

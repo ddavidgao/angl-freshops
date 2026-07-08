@@ -4,6 +4,7 @@
   "required": ["id", "qty"],
   "properties": {
     "id": {"type": "string"},
-    "qty": {"type": "integer", "minimum": 1}
+    "qty": {"type": "integer", "minimum": 1},
+    "cold_chain": {"type": "boolean"}
   }
 }

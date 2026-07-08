@@ -29,6 +29,7 @@ def test_full_stack_order_flow():
             "delivery_zone": "west",
             "priority": "express",
             "items": [
+                {"id": " ice cream ", "qty": 1, "cold_chain": True},
                 {"id": " milk ", "qty": 2},
                 {"id": "eggs", "qty": 1},
             ],
