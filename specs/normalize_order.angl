@@ -12,8 +12,8 @@ Schema: `schemas/Order.schema.json`
 
 Return a plain object with `order_id`, `customer`, `items`, and `delivery_zone`.
 Trim customer and item ids. Quantities must be positive whole numbers. The order
-must contain at least one item. The delivery zone defaults to `north` when it is
-missing.
+must contain at least one item. If it does not, fail with an error containing
+the exact word `items`. The delivery zone defaults to `north` when it is missing.
 
 ## Examples
 
