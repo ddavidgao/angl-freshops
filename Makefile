@@ -1,13 +1,11 @@
 ANGL_REPO ?= ../angl
 PROFILE ?= standard
-ANGL_MODEL_PROVIDER ?= claude-code
-ANGL_MODEL ?= sonnet
 ANGL_MODEL_TIMEOUT ?= 180
 
 .PHONY: build verify seed run-api run-worker test proof demo-profiles demo prove snapshot result diff clean
 
 build:
-	@ANGL_REPO=$(ANGL_REPO) ANGL_PROFILE=$(PROFILE) ANGL_MODEL_PROVIDER=$(ANGL_MODEL_PROVIDER) ANGL_MODEL=$(ANGL_MODEL) ANGL_MODEL_TIMEOUT=$(ANGL_MODEL_TIMEOUT) .venv/bin/python scripts/compile_angl.py
+	@ANGL_REPO=$(ANGL_REPO) ANGL_PROFILE=$(PROFILE) ANGL_MODEL_TIMEOUT=$(ANGL_MODEL_TIMEOUT) .venv/bin/python scripts/compile_angl.py
 
 verify:
 	@ANGL_REPO=$(ANGL_REPO) ANGL_PROFILE=$(PROFILE) .venv/bin/python scripts/verify_angl.py
