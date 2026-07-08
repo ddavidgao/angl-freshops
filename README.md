@@ -171,9 +171,10 @@ Open:
 http://127.0.0.1:8810
 ```
 
-FreshOps uses the configured Angl compiler provider. The Makefile defaults to a
-Claude Code provider for this demo, but the provider can be overridden with
-`ANGL_MODEL_PROVIDER`, `ANGL_MODEL`, and `ANGL_MODEL_TIMEOUT`.
+FreshOps uses the configured Angl compiler provider. Set it once with
+`angl setup codex`, `angl setup claude-code`, or `angl setup ollama`, then the
+Makefile uses that saved provider configuration. `ANGL_MODEL_TIMEOUT` can be
+set per run for slower local models.
 
 ## What This Repo Is Proving
 
