@@ -17,9 +17,11 @@ def main() -> int:
     processes = []
     try:
         run(["docker", "compose", "up", "-d", "postgres", "redis"])
-        run(["make", "build"])
-        run(["make", "test"])
-        run(["make", "seed"])
+        run(["angl", "build", "specs", "--build-dir", "build/latest"])
+        run(["angl", "verify", "specs", "--build-dir", "build/latest"])
+        run([str(PYTHON), "tests/test_generated_plan.py"])
+        run([str(PYTHON), "tests/test_full_stack_flow.py"])
+        run([str(PYTHON), "-m", "app.seed"])
         run(["docker", "compose", "exec", "redis", "redis-cli", "FLUSHDB"])
 
         worker = subprocess.Popen([str(PYTHON), "-m", "app.worker"], cwd=ROOT)
@@ -44,7 +46,6 @@ def main() -> int:
 
 def run(command: list[str]) -> None:
     env = os.environ.copy()
-    env["ANGL_REPO"] = env.get("ANGL_REPO", str((ROOT.parent / "angl").resolve()))
     env["ANGL_MODEL_TIMEOUT"] = env.get("ANGL_MODEL_TIMEOUT", "180")
     print("+ " + " ".join(command), flush=True)
     subprocess.run(command, cwd=ROOT, env=env, check=True)

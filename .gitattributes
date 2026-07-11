@@ -6,9 +6,4 @@
 app/** linguist-vendored
 scripts/** linguist-vendored
 tests/** linguist-vendored
-Makefile linguist-vendored
 docker-compose.yml linguist-vendored
-
-# Count the checked-in assembly proof snapshot.
-proof/assembly/*.s linguist-detectable=true
-proof/assembly/*.md linguist-vendored

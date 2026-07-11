@@ -51,9 +51,10 @@ def test_full_stack_order_flow():
     assert result["promise"]["customer"] == "Mia"
     assert result["promise"]["store"] == "north-market"
     assert "delay penalties applied" in result["promise"]["reasons"]
+    assert "cold chain protected" in result["promise"]["reasons"]
     assert "express priority" in result["promise"]["reasons"]
-    assert result["promise"]["courier_batch"] == ["drop-17", "drop-22"]
-    assert result["promise"]["promised_minutes"] == 46
+    assert result["promise"]["courier_batch"] == []
+    assert result["promise"]["promised_minutes"] == 37
 
 
 def test_duplicate_order_id_returns_conflict():

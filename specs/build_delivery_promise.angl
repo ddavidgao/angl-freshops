@@ -29,6 +29,11 @@ under strain.
 Pick nearby courier stops that can ride along with this order without exceeding
 the route minutes allowed by `pressure.batch_minutes`.
 
+If the cleaned order contains any cold-chain item, do not batch the order with
+nearby courier stops. Cold-chain orders go straight from the selected store to
+the buyer, so the courier batch is empty and courier minutes are zero. Include
+`"cold chain protected"` in `reasons`.
+
 The customer-facing time starts at 25 minutes for express orders and 35 minutes
 for normal orders. Add the selected store minutes and selected courier minutes
 to get the final promise.
@@ -41,7 +46,7 @@ promised minutes, and reasons.
 
 ## Examples
 
-### An express order can be promised during congestion
+### An express cold-chain order goes straight to the buyer during congestion
 
 Input `order`:
 ```json
@@ -93,9 +98,66 @@ Returns:
   "customer": "Mia",
   "store": "north-market",
   "substitutions": ["oat-milk-for-milk", "brown-eggs-for-eggs"],
-  "courier_batch": ["drop-17", "drop-22"],
-  "promised_minutes": 46,
-  "reasons": ["delay penalties applied", "express priority"]
+  "courier_batch": [],
+  "promised_minutes": 37,
+  "reasons": ["delay penalties applied", "cold chain protected", "express priority"]
+}
+```
+
+### A normal cold-chain order is protected without express priority
+
+Input `order`:
+```json
+{
+  "order_id": "O-203",
+  "customer": " Mia ",
+  "delivery_zone": "west",
+  "priority": "normal",
+  "items": [
+    {"id": " ice cream ", "qty": 1, "cold_chain": true}
+  ]
+}
+```
+
+Input `store_candidates`:
+```json
+[
+  {"id": "north-market", "cost": 12, "value": 96, "risk_penalty": 4, "delay_penalty": 3},
+  {"id": "west-market", "cost": 12, "value": 82, "risk_penalty": 1, "delay_penalty": 2}
+]
+```
+
+Input `substitution_candidates`:
+```json
+[
+  {"id": "oat-milk-for-milk", "cost": 2, "value": 8, "risk_penalty": 1, "delay_penalty": 1},
+  {"id": "brown-eggs-for-eggs", "cost": 1, "value": 5, "risk_penalty": 0, "delay_penalty": 1}
+]
+```
+
+Input `courier_candidates`:
+```json
+[
+  {"id": "drop-17", "cost": 4, "value": 9, "risk_penalty": 0, "delay_penalty": 1},
+  {"id": "drop-22", "cost": 5, "value": 10, "risk_penalty": 1, "delay_penalty": 2}
+]
+```
+
+Input `pressure`:
+```json
+{"max_cost": 12, "risk": 3, "delay": 8, "substitution_budget": 3, "batch_minutes": 9}
+```
+
+Returns:
+```json
+{
+  "order_id": "O-203",
+  "customer": "Mia",
+  "store": "north-market",
+  "substitutions": ["oat-milk-for-milk", "brown-eggs-for-eggs"],
+  "courier_batch": [],
+  "promised_minutes": 47,
+  "reasons": ["delay penalties applied", "cold chain protected"]
 }
 ```
 

@@ -7,8 +7,6 @@ The durable behavior is written as `.angl` chapters in `specs/`, with shared
 data shapes in `schemas/`. The runnable edition is generated, verified, and
 then used by a normal backend with Postgres, Redis, a worker, and an HTTP API.
 
-Implementation strategy lives in `profiles/`, not in the Angl chapters.
-
 ## What It Does
 
 A customer submits a grocery order. FreshOps:
@@ -16,7 +14,7 @@ A customer submits a grocery order. FreshOps:
 1. Normalizes the order.
 2. Chooses a fulfillment store.
 3. Chooses acceptable substitutions.
-4. Chooses courier stops to batch.
+4. Chooses courier stops to batch, unless cold-chain items require direct delivery.
 5. Computes the promised delivery time.
 6. Saves the promise back to Postgres.
 
@@ -53,52 +51,6 @@ choices into the Angl source.
 
 `build/latest/` is generated output. It is intentionally ignored by git.
 
-## Compiler Profiles
-
-```text
-profiles/
-  standard.json
-  native.json
-  scaleup.json
-```
-
-The same Angl source can be compiled under different profiles.
-
-`standard` keeps the implementation simple and lets the compiler use default
-targets.
-
-`native` asks the compiler to use generated bundles for two selection chapters
-and generated assembly for the small promise-timing function.
-
-`scaleup` uses the same behavior source but adds operating assumptions:
-50,000 orders/day, p95 promise latency under 100ms, local reproducibility, and
-native hot paths allowed. Its decision record explains why the compiler chooses
-assembly for promise timing.
-
-The active build writes its decision record to:
-
-```text
-build/latest/profile.manifest.json
-```
-
-## Assembly Proof
-
-Under the `native` and `scaleup` profiles, `compute_promise_minutes.angl` is
-compiled with Angl's `assembly` target. During build, Angl generates ARM64
-assembly, compiles it with local `clang` into a dylib, and generates a Python
-host adapter that calls the dylib through `ctypes`.
-
-The live app uses that generated function when computing `promised_minutes`.
-
-A checked-in proof snapshot is here:
-
-```text
-proof/assembly/compute_promise_minutes.s
-```
-
-That snapshot is not the source of truth. It exists so reviewers can see the
-assembly output without running the compiler first.
-
 ## Runtime Shape
 
 ```text
@@ -119,39 +71,31 @@ and tests. Product behavior is in `specs/`.
 After installing dependencies, run:
 
 ```bash
-make prove
+angl build specs --build-dir build/latest
+angl verify specs --build-dir build/latest
+python3 scripts/proof.py
 ```
 
 This command:
 
 1. Starts Postgres and Redis.
-2. Builds missing or stale generated output from `.angl`.
+2. Builds generated output from `.angl` using the public Angl CLI.
 3. Verifies every chapter with Angl's black-box judge.
-4. Checks that the assembly chapter generated `.s`, built a dylib, and is used
-   by the composed generated code.
-5. Runs app-level integration tests.
-6. Starts the worker and API.
-7. Submits a real HTTP order and checks the saved promise.
+4. Runs app-level integration tests.
+5. Starts the worker and API.
+6. Submits a real HTTP order and checks the saved promise.
 
 For a cold regeneration run:
 
 ```bash
-make clean
-make prove
+rm -rf build/latest
+angl build specs --build-dir build/latest
+angl verify specs --build-dir build/latest
+python3 scripts/proof.py
 ```
 
 Cold regeneration can take several minutes because it asks the model to rebuild
 every chapter.
-
-To show the profile abstraction in a demo:
-
-```bash
-make demo
-```
-
-The `.angl` source stays the same. The profile changes the compiler strategy.
-
-`make prove` runs the launch proof with the `scaleup` profile.
 
 ## Run Locally
 
@@ -159,10 +103,10 @@ The `.angl` source stays the same. The profile changes the compiler strategy.
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
 docker compose up -d postgres redis
-make seed
-make build
-make run-worker
-make run-api
+angl build specs --build-dir build/latest
+python3 -m app.seed
+.venv/bin/python -m app.worker
+.venv/bin/uvicorn app.server:app --host 127.0.0.1 --port 8810
 ```
 
 Open:
@@ -172,9 +116,8 @@ http://127.0.0.1:8810
 ```
 
 FreshOps uses the configured Angl compiler provider. Set it once with
-`angl setup codex`, `angl setup claude-code`, or `angl setup ollama`, then the
-Makefile uses that saved provider configuration. `ANGL_MODEL_TIMEOUT` can be
-set per run for slower local models.
+`angl setup codex`, `angl setup claude-code`, or `angl setup ollama`. Every
+subsequent `angl build` uses that saved provider configuration.
 
 ## What This Repo Is Proving
 
@@ -189,10 +132,8 @@ FreshOps now demonstrates:
 - Shared schemas for the real data shapes.
 - Black-box verification for every chapter.
 - Postgres and Redis in the runtime path.
-- One generated ARM64 assembly chapter used by the live app.
-- Compiler profiles that move implementation strategy out of `.angl` source.
 - A repeatable proof command that exercises the whole path.
 
 GitHub does not know Angl as a language yet. `.gitattributes` keeps host and
-proof plumbing from dominating the language bar and includes an assembly proof
-snapshot for visibility. The source of truth remains `specs/`.
+proof plumbing from dominating the language bar. The source of truth remains
+`specs/`.

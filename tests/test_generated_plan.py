@@ -42,9 +42,9 @@ def test_generated_delivery_promise():
         "customer": "Mia",
         "store": "north-market",
         "substitutions": ["oat-milk-for-milk", "brown-eggs-for-eggs"],
-        "courier_batch": ["drop-17", "drop-22"],
-        "promised_minutes": 46,
-        "reasons": ["delay penalties applied", "express priority"],
+        "courier_batch": [],
+        "promised_minutes": 37,
+        "reasons": ["delay penalties applied", "cold chain protected", "express priority"],
     }
 
 
